@@ -1,4 +1,3 @@
-
 // ============ Exact Probability Calculation (Markov Chain) ============
 const transitionCache = {};
 
@@ -65,7 +64,6 @@ function computeExactMetrics(attackerTroops, defenderTroops) {
     const A = attackerTroops;
     const D = defenderTroops;
 
-    // dp[a][d] = { win, attackerLosses, defenderLosses, rounds }
     const dp = Array.from({ length: A + 1 }, () => new Array(D + 1));
 
     // Base cases
@@ -135,8 +133,8 @@ class RiskCombatEngine {
     }
 
     resolveCombatRound(attackerTroops, defenderTroops) {
-        if (attackerTroops < 2) throw new Error('Attacker needs at least 2 troops to attack');
-        if (defenderTroops < 1) throw new Error('Defender needs at least 1 troop to defend');
+        if (attackerTroops < 2) throw new Error('مهاجم حداقل به ۲ سرباز برای حمله نیاز دارد');
+        if (defenderTroops < 1) throw new Error('مدافع حداقل به ۱ سرباز برای دفاع نیاز دارد');
 
         const attackerDiceCount = Math.min(3, attackerTroops - 1);
         const defenderDiceCount = Math.min(2, defenderTroops);
@@ -173,8 +171,8 @@ class RiskCombatEngine {
     }
 
     simulateBattle(attackerTroops, defenderTroops) {
-        if (attackerTroops < 2) throw new Error('Attacker needs at least 2 troops to attack');
-        if (defenderTroops < 1) throw new Error('Defender needs at least 1 troop to defend');
+        if (attackerTroops < 2) throw new Error('مهاجم حداقل به ۲ سرباز برای حمله نیاز دارد');
+        if (defenderTroops < 1) throw new Error('مدافع حداقل به ۱ سرباز برای دفاع نیاز دارد');
 
         let currentAttacker = attackerTroops;
         let currentDefender = defenderTroops;
@@ -260,7 +258,6 @@ document.getElementById('attackerTroops').addEventListener('input', function () 
     if (valid) this.classList.remove('error');
     else this.classList.add('error');
     updateLiveProbability();
-    // Reset step state if inputs change
     stepBattleState = null;
     currentDisplayResult = null;
     document.getElementById('resultSection').style.display = 'none';
@@ -272,7 +269,6 @@ document.getElementById('defenderTroops').addEventListener('input', function () 
     if (valid) this.classList.remove('error');
     else this.classList.add('error');
     updateLiveProbability();
-    // Reset step state if inputs change
     stepBattleState = null;
     currentDisplayResult = null;
     document.getElementById('resultSection').style.display = 'none';
@@ -307,83 +303,79 @@ function displayResult(result, showAllRounds = false) {
     if (result.winner === 'attacker') {
         winnerClass = 'attacker';
         winnerEmoji = '⚔️';
-        winnerText = 'Attacker Won!';
+        winnerText = 'مهاجم پیروز شد!';
     } else if (result.winner === 'defender') {
         winnerClass = 'defender';
         winnerEmoji = '🛡️';
-        winnerText = 'Defender Won!';
+        winnerText = 'مدافع پیروز شد!';
     } else {
         winnerClass = 'in-progress';
         winnerEmoji = '⚔️🛡️';
-        winnerText = 'Battle In Progress...';
+        winnerText = 'نبرد در جریان...';
     }
+
+            //     <div class="stat-card">
+            //     <div class="stat-label">تلفات مهاجم</div>
+            //     <div class="stat-value">${result.attackerLosses}</div>
+            // </div>
+            // <div class="stat-card">
+            //     <div class="stat-label">تلفات مدافع</div>
+            //     <div class="stat-value">${result.defenderLosses}</div>
+            // </div>
 
     let html = `
-                <div class="winner-banner ${winnerClass}">
-                    ${winnerEmoji} ${winnerText}
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-label">Attacker Remaining</div>
-                        <div class="stat-value">${result.attackerRemaining}</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Defender Remaining</div>
-                        <div class="stat-value">${result.defenderRemaining}</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Attacker Losses</div>
-                        <div class="stat-value">${result.attackerLosses}</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Defender Losses</div>
-                        <div class="stat-value">${result.defenderLosses}</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Total Rounds</div>
-                        <div class="stat-value">${result.totalRounds}</div>
-                    </div>
-                </div>
-            `;
+        <div class="winner-banner ${winnerClass}">
+            ${winnerEmoji} ${winnerText}
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">سربازان باقیمانده مهاجم</div>
+                <div class="stat-value">${result.attackerRemaining}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">سربازان باقیمانده مدافع</div>
+                <div class="stat-value">${result.defenderRemaining}</div>
+            </div>
 
-    // If current state probability available (for step-by-step)
+        </div>
+    `;
+
     if (result.currentMetrics && result.winner === null) {
         html += `
-                    <div class="live-probability" style="margin-top: 15px; border-color: var(--accent-yellow);">
-                        <h4>📊 Current State Win Probability</h4>
-                        <div class="probability-bar">
-                            <div class="probability-attacker" style="width: ${result.currentMetrics.attackerWinProbability}%;">
-                                ${result.currentMetrics.attackerWinProbability.toFixed(2)}%
-                            </div>
-                            <div class="probability-defender" style="width: ${result.currentMetrics.defenderWinProbability}%;">
-                                ${result.currentMetrics.defenderWinProbability.toFixed(2)}%
-                            </div>
-                        </div>
+            <div class="live-probability" style="margin-top: 15px; border-color: var(--accent-yellow);">
+                <h4>📊 احتمال پیروزی در حالت فعلی</h4>
+                <div class="probability-bar">
+                    <div class="probability-attacker" style="width: ${result.currentMetrics.attackerWinProbability}%;">
+                        ${result.currentMetrics.attackerWinProbability.toFixed(2)}%
                     </div>
-                `;
+                    <div class="probability-defender" style="width: ${result.currentMetrics.defenderWinProbability}%;">
+                        ${result.currentMetrics.defenderWinProbability.toFixed(2)}%
+                    </div>
+                </div>
+            </div>
+        `;
     }
 
-    // Round details
     if (showAllRounds && result.rounds && result.rounds.length > 0) {
         html += `
-                    <button class="toggle-details" onclick="toggleDetails()">Hide Details</button>
-                    <div class="round-details">
-                        ${result.rounds.map(round => `
-                            <div class="round-item">
-                                <strong>Round ${round.roundNumber}</strong><br>
-                                Attacker dice: [${round.attackerDice.join(', ')}]<br>
-                                Defender dice: [${round.defenderDice.join(', ')}]<br>
-                                ${round.comparisons.map((comp, i) => `
-                                    Comparison ${i + 1}: ${comp.attackerDie} vs ${comp.defenderDie} → 
-                                    ${comp.winner === 'attacker' ? 'Defender loses 1' : 'Attacker loses 1'}<br>
-                                `).join('')}
-                                After round: Attacker: ${round.newAttackerTroops}, Defender: ${round.newDefenderTroops}
-                            </div>
+            <button class="toggle-details" onclick="toggleDetails()">پنهان کردن جزئیات</button>
+            <div class="round-details">
+                ${result.rounds.map(round => `
+                    <div class="round-item">
+                        <strong>دور ${round.roundNumber}</strong><br>
+                        تاس‌های مهاجم: [${round.attackerDice.join('، ')}]<br>
+                        تاس‌های مدافع: [${round.defenderDice.join('، ')}]<br>
+                        ${round.comparisons.map((comp, i) => `
+                            مقایسه ${i + 1}: ${comp.attackerDie} در برابر ${comp.defenderDie} → 
+                            ${comp.winner === 'attacker' ? 'مدافع ۱ سرباز از دست می‌دهد' : 'مهاجم ۱ سرباز از دست می‌دهد'}<br>
                         `).join('')}
+                        پس از دور: مهاجم: ${round.newAttackerTroops}، مدافع: ${round.newDefenderTroops}
                     </div>
-                `;
+                `).join('')}
+            </div>
+        `;
     } else if (result.rounds && result.rounds.length > 0) {
-        html += `<button class="toggle-details" onclick="toggleDetails()">Show Details</button>`;
+        html += `<button class="toggle-details" onclick="toggleDetails()">نمایش جزئیات</button>`;
     }
 
     resultContent.innerHTML = html;
@@ -414,7 +406,6 @@ function rollOneRound() {
     const inputs = getInputs();
     if (!inputs) return;
 
-    // Initialize step battle if needed
     if (!stepBattleState || stepBattleState.winner) {
         stepBattleState = {
             initialAttacker: inputs.attackerTroops,
@@ -428,7 +419,7 @@ function rollOneRound() {
         };
     }
 
-    if (stepBattleState.winner) return; // battle already finished
+    if (stepBattleState.winner) return;
 
     const currentAttacker = stepBattleState.currentAttacker;
     const currentDefender = stepBattleState.currentDefender;
@@ -483,7 +474,6 @@ function blitzMode() {
     const inputs = getInputs();
     if (!inputs) return;
 
-    // Flash animation
     const flash = document.createElement('div');
     flash.className = 'blitz-animation';
     flash.textContent = '⚡';

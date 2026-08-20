@@ -4,46 +4,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="app.css">
-    <title>Risk Blitz Simulator Pro</title>
+    <title>شبیه‌ساز حرفه‌ای نبرد ریسک</title>
+    <style>
+        /* استایل دکمه بازگشت به بالا */
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 55px;
+            height: 55px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            transition: all 0.3s ease;
+            z-index: 999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
 
+        .scroll-top-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(59, 130, 246, 0.6);
+        }
+
+        .scroll-top-btn.visible {
+            display: flex;
+        }
+    </style>
 </head>
 <body>
+
+    <!-- دکمه بازگشت به بالا -->
+    <button class="scroll-top-btn" id="scrollTopBtn" onclick="scrollToTop()">↑</button>
+
     <div class="container">
-        <h1>⚔️ Risk Blitz Simulator Pro</h1>
-        <p class="subtitle">شبیه‌ساز پیشرفته نبردهای Risk با احتمال دقیق و زنده</p>
-
-        <div class="input-section">
-            <div class="input-grid">
-                <div class="input-group">
-                    <label for="attackerTroops">Attacker Troops</label>
-                    <input type="number" id="attackerTroops" value="10" min="2" max="1000">
-                </div>
-                <div class="input-group">
-                    <label for="defenderTroops">Defender Troops</label>
-                    <input type="number" id="defenderTroops" value="6" min="1" max="1000">
-                </div>
-            </div>
-
-            <div class="button-group">
-                <button class="btn btn-primary" onclick="simulateBattle()">Simulate Battle</button>
-                <button class="btn btn-secondary" onclick="rollOneRound()">Roll One Round</button>
-                <button class="btn btn-blitz" onclick="blitzMode()">⚡ BLITZ</button>
-                <button class="btn btn-reset" onclick="resetAll()">Reset</button>
-            </div>
-        </div>
-
-        <!-- Live probability section -->
+        
         <div class="live-probability" id="liveProbabilitySection" style="display: none;">
-            <h3 style="margin-bottom: 10px;">📊 Live Win Probability</h3>
             <div class="probability-bar">
-                <div class="probability-attacker" id="liveAttackerProb" style="width: 50%;">50%</div>
-                <div class="probability-defender" id="liveDefenderProb" style="width: 50%;">50%</div>
+                <div class="probability-attacker" id="liveAttackerProb" style="width: 50%;">۵۰٪</div>
+                <div class="probability-defender" id="liveDefenderProb" style="width: 50%;">۵۰٪</div>
             </div>
             <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Expected Attacker Losses</div>
+                <div class="stat-card" style="margin-bottom:1rem ;">
+                    <div class="stat-label">تلفات مورد انتظار مهاجم</div>
                     <div class="stat-value" id="liveAttackerLosses">-</div>
                 </div>
+            </div>
+            <div class="input-grid" >
+                <div class="input-group">
+                    <input type="number" placeholder="حمله کننده" id="attackerTroops" value="10" min="2" max="1000">
+                </div>
+                <div class="input-group">
+                    <input type="number" id="defenderTroops" placeholder="دفاع کننده" value="6" min="1" max="1000">
+                </div>
+            </div>
+    
+            <div class="button-group">
+                <button class="btn btn-primary" id="simulateBtn" onclick="simulateBattle()">شبیه‌سازی نبرد</button>
+                <button class="btn btn-reset" onclick="resetAll()">بازنشانی</button>
             </div>
         </div>
 
@@ -53,5 +76,63 @@
     </div>
 
     <script src="main.js"></script>
+    <script>
+        // ============ اسکرول به پایین بعد از شبیه‌سازی ============
+        const originalSimulate = window.simulateBattle;
+
+        window.simulateBattle = function() {
+            // اجرای تابع اصلی
+            if (typeof originalSimulate === 'function') {
+                originalSimulate();
+            }
+
+            // اسکرول به بخش نتیجه بعد از اجرا (با تاخیر برای اطمینان از رندر شدن)
+            setTimeout(() => {
+                const resultSection = document.getElementById('resultSection');
+                if (resultSection && resultSection.style.display !== 'none') {
+                    resultSection.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start',
+                        inline: 'nearest'
+                    });
+                }
+            }, 100);
+        };
+
+        // ============ دکمه بازگشت به بالا ============
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
+
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // ============ همچنین برای دکمه Blitz Mode ============
+        const originalBlitz = window.blitzMode;
+        if (typeof originalBlitz === 'function') {
+            window.blitzMode = function() {
+                originalBlitz();
+                setTimeout(() => {
+                    const resultSection = document.getElementById('resultSection');
+                    if (resultSection && resultSection.style.display !== 'none') {
+                        resultSection.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'start'
+                        });
+                    }
+                }, 100);
+            };
+        }
+    </script>
 </body>
 </html>

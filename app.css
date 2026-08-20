@@ -24,6 +24,9 @@
     padding: 0;
     box-sizing: border-box;
 }
+button{
+    font-family: "Vazir";
+}
 
 body {
     font-family:  "Vazir";
@@ -41,7 +44,7 @@ body {
     width: 100%;
     background: var(--bg-secondary);
     border-radius: 20px;
-    padding: 30px;
+    padding: 10px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     border: 1px solid var(--border);
 }
@@ -196,6 +199,7 @@ input.error {
 
 .live-probability {
     margin-top: 25px;
+    margin-bottom: 2rem;
     padding: 20px;
     background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1));
     border-radius: 10px;
@@ -204,20 +208,21 @@ input.error {
 
 .probability-bar {
     display: flex;
-    height: 40px;
-    border-radius: 20px;
+    height: 30px;
+    border-radius: 7px;
     overflow: hidden;
     margin: 15px 0;
 }
 
 .probability-attacker {
-    background: linear-gradient(90deg, #3b82f6, #2563eb);
+    background: linear-gradient(90deg, #3bf68c, #25eb60);
     transition: width 0.3s ease-out;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: rgb(0, 0, 0);
     font-weight: bold;
+    font-size: 0.8rem;
 }
 
 .probability-defender {
@@ -225,8 +230,9 @@ input.error {
     transition: width 0.3s ease-out;
     display: flex;
     align-items: center;
+    font-size: 0.8rem;
     justify-content: center;
-    color: white;
+    color: rgb(0, 0, 0);
     font-weight: bold;
 }
 
@@ -359,11 +365,11 @@ input.error {
     }
 
     .input-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
     }
 
     .button-group {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
     }
 }
 
@@ -372,9 +378,14 @@ input.error {
     outline-color: var(--accent-red);
 }
 #attackerTroops{
-
     color: var(--accent-red);
+    box-shadow: 0 0 10px var(--accent-red);
+}
+#defenderTroops:focus{
+    border-color: var(--accent-blue);
+    outline-color: var(--accent-blue);
 }
 #defenderTroops{
+    box-shadow: 0 0 10px var(--accent-blue);
     color: var(--accent-blue);
 }
