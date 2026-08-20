@@ -242,28 +242,26 @@ function updateLiveProbability() {
     const attackerProb = metrics.attackerWinProbability;
     const defenderProb = metrics.defenderWinProbability;
 
-    // به‌روزرسانی نوار احتمال
     const attackerBar = document.getElementById('liveAttackerProb');
     const defenderBar = document.getElementById('liveDefenderProb');
-    
     if (attackerBar) {
         attackerBar.style.width = `${attackerProb}%`;
         attackerBar.textContent = `${attackerProb.toFixed(2)}%`;
     }
-    
     if (defenderBar) {
         defenderBar.style.width = `${defenderProb}%`;
         defenderBar.textContent = `${defenderProb.toFixed(2)}%`;
     }
 
-    // به‌روزرسانی آمار تلفات
-    const attackerLossesEl = document.getElementById('liveAttackerLosses');
-    if (attackerLossesEl) {
-        attackerLossesEl.textContent = metrics.expectedAttackerLosses.toFixed(2);
-    }
+    // به‌روزرسانی امن
+    const el1 = document.getElementById('liveAttackerLosses');
+    if (el1) el1.textContent = metrics.expectedAttackerLosses.toFixed(2);
 
-    // اضافه کردن المان‌های گم‌شده برای DefenderLosses و Rounds در صورت نیاز
-    // یا حذف ارجاع به آنها اگر در HTML وجود ندارند
+    const el2 = document.getElementById('liveDefenderLosses');
+    if (el2) el2.textContent = metrics.expectedDefenderLosses.toFixed(2);
+
+    const el3 = document.getElementById('liveRounds');
+    if (el3) el3.textContent = metrics.expectedRounds.toFixed(2);
 }
 
 // ============ Input Event Listeners ============
