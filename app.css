@@ -1,6 +1,6 @@
 @font-face{
     font-family: "Vazir";
-    src: url("");
+    src: url("Vazirmatn-Regular.ttf") format("truetype");
 }
 
 :root {
@@ -26,7 +26,7 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family:  "Vazir";
     background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1a2e 100%);
     color: var(--text-primary);
     min-height: 100vh;
@@ -90,9 +90,11 @@ label {
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    font-family:  "Vazir";
 }
 
 input {
+    font-family:  "Vazir";
     background: var(--bg-primary);
     border: 2px solid var(--border);
     border-radius: 10px;
@@ -104,6 +106,7 @@ input {
 }
 
 input:focus {
+    font-family:  "Vazir";
     outline: none;
     border-color: var(--accent-blue);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
@@ -112,6 +115,7 @@ input:focus {
 input.error {
     border-color: var(--accent-red);
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+    font-family:  "Vazir";
 }
 
 .button-group {
@@ -361,4 +365,16 @@ input.error {
     .button-group {
         grid-template-columns: 1fr;
     }
+}
+
+#attackerTroops:focus{
+    border-color: var(--accent-red);
+    outline-color: var(--accent-red);
+}
+#attackerTroops{
+
+    color: var(--accent-red);
+}
+#defenderTroops{
+    color: var(--accent-blue);
 }
