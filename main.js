@@ -242,13 +242,28 @@ function updateLiveProbability() {
     const attackerProb = metrics.attackerWinProbability;
     const defenderProb = metrics.defenderWinProbability;
 
-    document.getElementById('liveAttackerProb').style.width = `${attackerProb}%`;
-    document.getElementById('liveAttackerProb').textContent = `${attackerProb.toFixed(2)}%`;
-    document.getElementById('liveDefenderProb').style.width = `${defenderProb}%`;
-    document.getElementById('liveDefenderProb').textContent = `${defenderProb.toFixed(2)}%`;
-    document.getElementById('liveAttackerLosses').textContent = metrics.expectedAttackerLosses.toFixed(2);
-    document.getElementById('liveDefenderLosses').textContent = metrics.expectedDefenderLosses.toFixed(2);
-    document.getElementById('liveRounds').textContent = metrics.expectedRounds.toFixed(2);
+    // به‌روزرسانی نوار احتمال
+    const attackerBar = document.getElementById('liveAttackerProb');
+    const defenderBar = document.getElementById('liveDefenderProb');
+    
+    if (attackerBar) {
+        attackerBar.style.width = `${attackerProb}%`;
+        attackerBar.textContent = `${attackerProb.toFixed(2)}%`;
+    }
+    
+    if (defenderBar) {
+        defenderBar.style.width = `${defenderProb}%`;
+        defenderBar.textContent = `${defenderProb.toFixed(2)}%`;
+    }
+
+    // به‌روزرسانی آمار تلفات
+    const attackerLossesEl = document.getElementById('liveAttackerLosses');
+    if (attackerLossesEl) {
+        attackerLossesEl.textContent = metrics.expectedAttackerLosses.toFixed(2);
+    }
+
+    // اضافه کردن المان‌های گم‌شده برای DefenderLosses و Rounds در صورت نیاز
+    // یا حذف ارجاع به آنها اگر در HTML وجود ندارند
 }
 
 // ============ Input Event Listeners ============
@@ -257,10 +272,18 @@ document.getElementById('attackerTroops').addEventListener('input', function () 
     const valid = Number.isInteger(value) && value >= 2 && value <= 1000;
     if (valid) this.classList.remove('error');
     else this.classList.add('error');
-    updateLiveProbability();
+    
+    // بازنشانی وضعیت نبرد
     stepBattleState = null;
     currentDisplayResult = null;
     document.getElementById('resultSection').style.display = 'none';
+    
+    // به‌روزرسانی احتمال زنده
+    try {
+        updateLiveProbability();
+    } catch (e) {
+        console.warn('Error updating live probability:', e);
+    }
 });
 
 document.getElementById('defenderTroops').addEventListener('input', function () {
@@ -268,10 +291,18 @@ document.getElementById('defenderTroops').addEventListener('input', function () 
     const valid = Number.isInteger(value) && value >= 1 && value <= 1000;
     if (valid) this.classList.remove('error');
     else this.classList.add('error');
-    updateLiveProbability();
+    
+    // بازنشانی وضعیت نبرد
     stepBattleState = null;
     currentDisplayResult = null;
     document.getElementById('resultSection').style.display = 'none';
+    
+    // به‌روزرسانی احتمال زنده
+    try {
+        updateLiveProbability();
+    } catch (e) {
+        console.warn('Error updating live probability:', e);
+    }
 });
 
 // ============ Validation ============
@@ -289,10 +320,25 @@ function getInputs() {
     if (!defenderValid) defenderInput.classList.add('error');
     else defenderInput.classList.remove('error');
 
-    if (!attackerValid || !defenderValid) return null;
+    if (!attackerValid || !defenderValid) {
+        // نمایش پیام خطا به کاربر
+        const resultSection = document.getElementById('resultSection');
+        const resultContent = document.getElementById('resultContent');
+        resultSection.style.display = 'block';
+        resultContent.innerHTML = `
+            <div class="winner-banner in-progress">
+                ⚠️ لطفاً مقادیر معتبر وارد کنید:
+                <br>
+                مهاجم: حداقل ۲، حداکثر ۱۰۰۰
+                <br>
+                مدافع: حداقل ۱، حداکثر ۱۰۰۰
+            </div>
+        `;
+        return null;
+    }
+    
     return { attackerTroops, defenderTroops };
 }
-
 // ============ Display Functions ============
 function displayResult(result, showAllRounds = false) {
     const resultSection = document.getElementById('resultSection');
