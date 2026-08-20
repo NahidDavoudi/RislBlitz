@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risk Blitz Simulator Pro</title>
+    <style>
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #131a2a;
+            --bg-card: #1a2332;
+            --border: #2a3a4a;
+            --text-primary: #e0e6ed;
+            --text-secondary: #a0aab8;
+            --accent-red: #ef4444;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-purple: #8b5cf6;
+            --neutral: #6b7280;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1a2e 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--accent-red), var(--accent-yellow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .input-section {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input {
+            background: var(--bg-primary);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+
+        input.error {
+            border-color: var(--accent-red);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), #2563eb);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-blitz {
+            background: linear-gradient(135deg, var(--accent-red), #dc2626);
+            color: white;
+            animation: blitzPulse 2s infinite;
+        }
+
+        .btn-blitz:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.5);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--accent-green), #059669);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: linear-gradient(135deg, #4b5563, #374151);
+            box-shadow: 0 5px 15px rgba(107, 114, 128, 0.4);
+        }
+
+        @keyframes blitzPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(239, 68, 68, 0.6); }
+        }
+
+        .live-probability {
+            margin-top: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1));
+            border-radius: 10px;
+            border: 1px solid var(--accent-purple);
+        }
+
+        .probability-bar {
+            display: flex;
+            height: 40px;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .probability-attacker {
+            background: linear-gradient(90deg, #3b82f6, #2563eb);
+            transition: width 0.3s ease-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .probability-defender {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+            transition: width 0.3s ease-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-card {
+            background: var(--bg-primary);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .result-section {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 25px;
+            border: 1px solid var(--border);
+        }
+
+        .winner-banner {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .winner-banner.attacker {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--accent-blue);
+            border: 2px solid var(--accent-blue);
+        }
+
+        .winner-banner.defender {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--accent-red);
+            border: 2px solid var(--accent-red);
+        }
+
+        .winner-banner.in-progress {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--accent-purple);
+            border: 2px solid var(--accent-purple);
+        }
+
+        .round-details {
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .round-item {
+            padding: 8px;
+            border-bottom: 1px solid var(--border);
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        .round-item:last-child {
+            border-bottom: none;
+        }
+
+        .toggle-details {
+            margin-top: 10px;
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .toggle-details:hover {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .blitz-animation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 5rem;
+            pointer-events: none;
+            animation: blitzFlash 0.3s ease-out;
+            z-index: 1000;
+        }
+
+        @keyframes blitzFlash {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(3); }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚔️ Risk Blitz Simulator Pro</h1>
+        <p class="subtitle">شبیه‌ساز پیشرفته نبردهای Risk با احتمال دقیق و زنده</p>
+
+        <div class="input-section">
+            <div class="input-grid">
+                <div class="input-group">
+                    <label for="attackerTroops">Attacker Troops</label>
+                    <input type="number" id="attackerTroops" value="10" min="2" max="1000">
+                </div>
+                <div class="input-group">
+                    <label for="defenderTroops">Defender Troops</label>
+                    <input type="number" id="defenderTroops" value="6" min="1" max="1000">
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="simulateBattle()">Simulate Battle</button>
+                <button class="btn btn-secondary" onclick="rollOneRound()">Roll One Round</button>
+                <button class="btn btn-blitz" onclick="blitzMode()">⚡ BLITZ</button>
+                <button class="btn btn-reset" onclick="resetAll()">Reset</button>
+            </div>
+        </div>
+
+        <!-- Live probability section -->
+        <div class="live-probability" id="liveProbabilitySection" style="display: none;">
+            <h3 style="margin-bottom: 10px;">📊 Live Win Probability</h3>
+            <div class="probability-bar">
+                <div class="probability-attacker" id="liveAttackerProb" style="width: 50%;">50%</div>
+                <div class="probability-defender" id="liveDefenderProb" style="width: 50%;">50%</div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Expected Attacker Losses</div>
+                    <div class="stat-value" id="liveAttackerLosses">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Expected Defender Losses</div>
+                    <div class="stat-value" id="liveDefenderLosses">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Expected Rounds</div>
+                    <div class="stat-value" id="liveRounds">-</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="result-section" id="resultSection" style="display: none;">
+            <div id="resultContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // ============ Exact Probability Calculation (Markov Chain) ============
+        const transitionCache = {};
+
+        function allRolls(count) {
+            const rolls = [];
+            const current = new Array(count);
+            function rec(pos) {
+                if (pos === count) {
+                    rolls.push([...current]);
+                    return;
+                }
+                for (let v = 1; v <= 6; v++) {
+                    current[pos] = v;
+                    rec(pos + 1);
+                }
+            }
+            rec(0);
+            return rolls;
+        }
+
+        function computeTransition(k, l) {
+            const key = `${k},${l}`;
+            if (transitionCache[key]) return transitionCache[key];
+
+            const n = Math.min(k, l);
+            const lossesCounts = new Array(n + 1).fill(0);
+            const attackerRolls = allRolls(k);
+            const defenderRolls = allRolls(l);
+            const total = attackerRolls.length * defenderRolls.length;
+
+            for (const aRoll of attackerRolls) {
+                const sortedA = [...aRoll].sort((a, b) => b - a);
+                for (const dRoll of defenderRolls) {
+                    const sortedD = [...dRoll].sort((a, b) => b - a);
+                    let x = 0;
+                    for (let i = 0; i < n; i++) {
+                        if (sortedA[i] <= sortedD[i]) {
+                            x++;
+                        }
+                    }
+                    lossesCounts[x]++;
+                }
+            }
+
+            const probs = lossesCounts.map(count => count / total);
+            transitionCache[key] = probs;
+            return probs;
+        }
+
+        // Precompute for all possible combinations
+        for (let k = 1; k <= 3; k++) {
+            for (let l = 1; l <= 2; l++) {
+                computeTransition(k, l);
+            }
+        }
+
+        const metricsCache = new Map();
+
+        function computeExactMetrics(attackerTroops, defenderTroops) {
+            if (attackerTroops < 2 || defenderTroops < 1) return null;
+            const cacheKey = `${attackerTroops},${defenderTroops}`;
+            if (metricsCache.has(cacheKey)) return metricsCache.get(cacheKey);
+
+            const A = attackerTroops;
+            const D = defenderTroops;
+
+            // dp[a][d] = { win, attackerLosses, defenderLosses, rounds }
+            const dp = Array.from({ length: A + 1 }, () => new Array(D + 1));
+
+            // Base cases
+            for (let a = 0; a <= A; a++) {
+                dp[a][0] = { win: 1, attackerLosses: 0, defenderLosses: 0, rounds: 0 };
+            }
+            for (let d = 1; d <= D; d++) {
+                dp[0][d] = { win: 0, attackerLosses: 0, defenderLosses: 0, rounds: 0 };
+                dp[1][d] = { win: 0, attackerLosses: 0, defenderLosses: 0, rounds: 0 };
+            }
+
+            for (let a = 2; a <= A; a++) {
+                for (let d = 1; d <= D; d++) {
+                    const k = Math.min(3, a - 1);
+                    const l = Math.min(2, d);
+                    const n = Math.min(k, l);
+                    const trans = transitionCache[`${k},${l}`];
+
+                    let win = 0;
+                    let attackerLosses = 0;
+                    let defenderLosses = 0;
+                    let rounds = 0;
+
+                    for (let x = 0; x <= n; x++) {
+                        const p = trans[x];
+                        if (p === 0) continue;
+                        const y = n - x;
+                        const sub = dp[a - x][d - y];
+                        win += p * sub.win;
+                        attackerLosses += p * (x + sub.attackerLosses);
+                        defenderLosses += p * (y + sub.defenderLosses);
+                        rounds += p * (1 + sub.rounds);
+                    }
+
+                    dp[a][d] = { win, attackerLosses, defenderLosses, rounds };
+                }
+            }
+
+            const res = dp[A][D];
+            const metrics = {
+                attackerWinProbability: res.win * 100,
+                defenderWinProbability: (1 - res.win) * 100,
+                expectedAttackerLosses: res.attackerLosses,
+                expectedDefenderLosses: res.defenderLosses,
+                expectedRounds: res.rounds,
+            };
+            metricsCache.set(cacheKey, metrics);
+            return metrics;
+        }
+
+        // ============ Random Simulation Engine ============
+        class RiskCombatEngine {
+            constructor(randomFn = Math.random) {
+                this.randomFn = randomFn;
+            }
+
+            rollDie() {
+                return Math.floor(this.randomFn() * 6) + 1;
+            }
+
+            rollDice(count) {
+                const dice = [];
+                for (let i = 0; i < count; i++) {
+                    dice.push(this.rollDie());
+                }
+                return dice.sort((a, b) => b - a);
+            }
+
+            resolveCombatRound(attackerTroops, defenderTroops) {
+                if (attackerTroops < 2) throw new Error('Attacker needs at least 2 troops to attack');
+                if (defenderTroops < 1) throw new Error('Defender needs at least 1 troop to defend');
+
+                const attackerDiceCount = Math.min(3, attackerTroops - 1);
+                const defenderDiceCount = Math.min(2, defenderTroops);
+
+                const attackerDice = this.rollDice(attackerDiceCount);
+                const defenderDice = this.rollDice(defenderDiceCount);
+
+                let attackerLosses = 0;
+                let defenderLosses = 0;
+                const comparisons = [];
+
+                const comparisonCount = Math.min(attackerDice.length, defenderDice.length);
+                for (let i = 0; i < comparisonCount; i++) {
+                    const attackDie = attackerDice[i];
+                    const defenseDie = defenderDice[i];
+                    if (attackDie > defenseDie) {
+                        defenderLosses++;
+                        comparisons.push({ attackerDie: attackDie, defenderDie: defenseDie, winner: 'attacker', loser: 'defender' });
+                    } else {
+                        attackerLosses++;
+                        comparisons.push({ attackerDie: attackDie, defenderDie: defenseDie, winner: 'defender', loser: 'attacker' });
+                    }
+                }
+
+                return {
+                    attackerDice,
+                    defenderDice,
+                    attackerLosses,
+                    defenderLosses,
+                    comparisons,
+                    newAttackerTroops: attackerTroops - attackerLosses,
+                    newDefenderTroops: defenderTroops - defenderLosses
+                };
+            }
+
+            simulateBattle(attackerTroops, defenderTroops) {
+                if (attackerTroops < 2) throw new Error('Attacker needs at least 2 troops to attack');
+                if (defenderTroops < 1) throw new Error('Defender needs at least 1 troop to defend');
+
+                let currentAttacker = attackerTroops;
+                let currentDefender = defenderTroops;
+                const rounds = [];
+                let totalAttackerLosses = 0;
+                let totalDefenderLosses = 0;
+
+                while (currentAttacker > 1 && currentDefender > 0) {
+                    const round = this.resolveCombatRound(currentAttacker, currentDefender);
+                    round.roundNumber = rounds.length + 1;
+                    round.attackerBefore = currentAttacker;
+                    round.defenderBefore = currentDefender;
+
+                    currentAttacker = round.newAttackerTroops;
+                    currentDefender = round.newDefenderTroops;
+
+                    totalAttackerLosses += round.attackerLosses;
+                    totalDefenderLosses += round.defenderLosses;
+
+                    rounds.push(round);
+                }
+
+                return {
+                    winner: currentDefender === 0 ? 'attacker' : 'defender',
+                    attackerRemaining: currentAttacker,
+                    defenderRemaining: currentDefender,
+                    attackerLosses: totalAttackerLosses,
+                    defenderLosses: totalDefenderLosses,
+                    totalRounds: rounds.length,
+                    rounds
+                };
+            }
+        }
+
+        const engine = new RiskCombatEngine();
+
+        // ============ UI State ============
+        let currentDisplayResult = null;
+        let stepBattleState = null;
+        let showDetails = false;
+
+        // ============ Live Probability Update ============
+        function updateLiveProbability() {
+            const attackerInput = document.getElementById('attackerTroops');
+            const defenderInput = document.getElementById('defenderTroops');
+            const attackerTroops = parseInt(attackerInput.value);
+            const defenderTroops = parseInt(defenderInput.value);
+
+            const attackerValid = Number.isInteger(attackerTroops) && attackerTroops >= 2 && attackerTroops <= 1000;
+            const defenderValid = Number.isInteger(defenderTroops) && defenderTroops >= 1 && defenderTroops <= 1000;
+
+            const liveSection = document.getElementById('liveProbabilitySection');
+
+            if (!attackerValid || !defenderValid) {
+                liveSection.style.display = 'none';
+                return;
+            }
+
+            const metrics = computeExactMetrics(attackerTroops, defenderTroops);
+            if (!metrics) {
+                liveSection.style.display = 'none';
+                return;
+            }
+
+            liveSection.style.display = 'block';
+
+            const attackerProb = metrics.attackerWinProbability;
+            const defenderProb = metrics.defenderWinProbability;
+
+            document.getElementById('liveAttackerProb').style.width = `${attackerProb}%`;
+            document.getElementById('liveAttackerProb').textContent = `${attackerProb.toFixed(2)}%`;
+            document.getElementById('liveDefenderProb').style.width = `${defenderProb}%`;
+            document.getElementById('liveDefenderProb').textContent = `${defenderProb.toFixed(2)}%`;
+            document.getElementById('liveAttackerLosses').textContent = metrics.expectedAttackerLosses.toFixed(2);
+            document.getElementById('liveDefenderLosses').textContent = metrics.expectedDefenderLosses.toFixed(2);
+            document.getElementById('liveRounds').textContent = metrics.expectedRounds.toFixed(2);
+        }
+
+        // ============ Input Event Listeners ============
+        document.getElementById('attackerTroops').addEventListener('input', function() {
+            const value = parseInt(this.value);
+            const valid = Number.isInteger(value) && value >= 2 && value <= 1000;
+            if (valid) this.classList.remove('error');
+            else this.classList.add('error');
+            updateLiveProbability();
+            // Reset step state if inputs change
+            stepBattleState = null;
+            currentDisplayResult = null;
+            document.getElementById('resultSection').style.display = 'none';
+        });
+
+        document.getElementById('defenderTroops').addEventListener('input', function() {
+            const value = parseInt(this.value);
+            const valid = Number.isInteger(value) && value >= 1 && value <= 1000;
+            if (valid) this.classList.remove('error');
+            else this.classList.add('error');
+            updateLiveProbability();
+            // Reset step state if inputs change
+            stepBattleState = null;
+            currentDisplayResult = null;
+            document.getElementById('resultSection').style.display = 'none';
+        });
+
+        // ============ Validation ============
+        function getInputs() {
+            const attackerInput = document.getElementById('attackerTroops');
+            const defenderInput = document.getElementById('defenderTroops');
+            const attackerTroops = parseInt(attackerInput.value);
+            const defenderTroops = parseInt(defenderInput.value);
+
+            const attackerValid = Number.isInteger(attackerTroops) && attackerTroops >= 2 && attackerTroops <= 1000;
+            const defenderValid = Number.isInteger(defenderTroops) && defenderTroops >= 1 && defenderTroops <= 1000;
+
+            if (!attackerValid) attackerInput.classList.add('error');
+            else attackerInput.classList.remove('error');
+            if (!defenderValid) defenderInput.classList.add('error');
+            else defenderInput.classList.remove('error');
+
+            if (!attackerValid || !defenderValid) return null;
+            return { attackerTroops, defenderTroops };
+        }
+
+        // ============ Display Functions ============
+        function displayResult(result, showAllRounds = false) {
+            const resultSection = document.getElementById('resultSection');
+            const resultContent = document.getElementById('resultContent');
+            resultSection.style.display = 'block';
+
+            let winnerClass, winnerEmoji, winnerText;
+            if (result.winner === 'attacker') {
+                winnerClass = 'attacker';
+                winnerEmoji = '⚔️';
+                winnerText = 'Attacker Won!';
+            } else if (result.winner === 'defender') {
+                winnerClass = 'defender';
+                winnerEmoji = '🛡️';
+                winnerText = 'Defender Won!';
+            } else {
+                winnerClass = 'in-progress';
+                winnerEmoji = '⚔️🛡️';
+                winnerText = 'Battle In Progress...';
+            }
+
+            let html = `
+                <div class="winner-banner ${winnerClass}">
+                    ${winnerEmoji} ${winnerText}
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Attacker Remaining</div>
+                        <div class="stat-value">${result.attackerRemaining}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Defender Remaining</div>
+                        <div class="stat-value">${result.defenderRemaining}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Attacker Losses</div>
+                        <div class="stat-value">${result.attackerLosses}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Defender Losses</div>
+                        <div class="stat-value">${result.defenderLosses}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Rounds</div>
+                        <div class="stat-value">${result.totalRounds}</div>
+                    </div>
+                </div>
+            `;
+
+            // If current state probability available (for step-by-step)
+            if (result.currentMetrics && result.winner === null) {
+                html += `
+                    <div class="live-probability" style="margin-top: 15px; border-color: var(--accent-yellow);">
+                        <h4>📊 Current State Win Probability</h4>
+                        <div class="probability-bar">
+                            <div class="probability-attacker" style="width: ${result.currentMetrics.attackerWinProbability}%;">
+                                ${result.currentMetrics.attackerWinProbability.toFixed(2)}%
+                            </div>
+                            <div class="probability-defender" style="width: ${result.currentMetrics.defenderWinProbability}%;">
+                                ${result.currentMetrics.defenderWinProbability.toFixed(2)}%
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Round details
+            if (showAllRounds && result.rounds && result.rounds.length > 0) {
+                html += `
+                    <button class="toggle-details" onclick="toggleDetails()">Hide Details</button>
+                    <div class="round-details">
+                        ${result.rounds.map(round => `
+                            <div class="round-item">
+                                <strong>Round ${round.roundNumber}</strong><br>
+                                Attacker dice: [${round.attackerDice.join(', ')}]<br>
+                                Defender dice: [${round.defenderDice.join(', ')}]<br>
+                                ${round.comparisons.map((comp, i) => `
+                                    Comparison ${i + 1}: ${comp.attackerDie} vs ${comp.defenderDie} → 
+                                    ${comp.winner === 'attacker' ? 'Defender loses 1' : 'Attacker loses 1'}<br>
+                                `).join('')}
+                                After round: Attacker: ${round.newAttackerTroops}, Defender: ${round.newDefenderTroops}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else if (result.rounds && result.rounds.length > 0) {
+                html += `<button class="toggle-details" onclick="toggleDetails()">Show Details</button>`;
+            }
+
+            resultContent.innerHTML = html;
+        }
+
+        function toggleDetails() {
+            showDetails = !showDetails;
+            if (currentDisplayResult) {
+                displayResult(currentDisplayResult, showDetails);
+            }
+        }
+
+        // ============ Button Actions ============
+        function simulateBattle() {
+            const inputs = getInputs();
+            if (!inputs) return;
+
+            const result = engine.simulateBattle(inputs.attackerTroops, inputs.defenderTroops);
+            result.metrics = computeExactMetrics(inputs.attackerTroops, inputs.defenderTroops);
+
+            currentDisplayResult = result;
+            stepBattleState = null;
+            showDetails = false;
+            displayResult(result, false);
+        }
+
+        function rollOneRound() {
+            const inputs = getInputs();
+            if (!inputs) return;
+
+            // Initialize step battle if needed
+            if (!stepBattleState || stepBattleState.winner) {
+                stepBattleState = {
+                    initialAttacker: inputs.attackerTroops,
+                    initialDefender: inputs.defenderTroops,
+                    currentAttacker: inputs.attackerTroops,
+                    currentDefender: inputs.defenderTroops,
+                    totalAttackerLosses: 0,
+                    totalDefenderLosses: 0,
+                    rounds: [],
+                    winner: null
+                };
+            }
+
+            if (stepBattleState.winner) return; // battle already finished
+
+            const currentAttacker = stepBattleState.currentAttacker;
+            const currentDefender = stepBattleState.currentDefender;
+
+            if (currentAttacker <= 1 || currentDefender <= 0) {
+                stepBattleState.winner = currentDefender === 0 ? 'attacker' : 'defender';
+                displayStepResult();
+                return;
+            }
+
+            const round = engine.resolveCombatRound(currentAttacker, currentDefender);
+            round.roundNumber = stepBattleState.rounds.length + 1;
+            round.attackerBefore = currentAttacker;
+            round.defenderBefore = currentDefender;
+
+            stepBattleState.rounds.push(round);
+            stepBattleState.currentAttacker = round.newAttackerTroops;
+            stepBattleState.currentDefender = round.newDefenderTroops;
+            stepBattleState.totalAttackerLosses += round.attackerLosses;
+            stepBattleState.totalDefenderLosses += round.defenderLosses;
+
+            if (round.newDefenderTroops === 0) {
+                stepBattleState.winner = 'attacker';
+            } else if (round.newAttackerTroops === 1) {
+                stepBattleState.winner = 'defender';
+            }
+
+            displayStepResult();
+        }
+
+        function displayStepResult() {
+            const result = {
+                winner: stepBattleState.winner,
+                attackerRemaining: stepBattleState.currentAttacker,
+                defenderRemaining: stepBattleState.currentDefender,
+                attackerLosses: stepBattleState.totalAttackerLosses,
+                defenderLosses: stepBattleState.totalDefenderLosses,
+                totalRounds: stepBattleState.rounds.length,
+                rounds: stepBattleState.rounds,
+                metrics: computeExactMetrics(stepBattleState.initialAttacker, stepBattleState.initialDefender)
+            };
+
+            if (stepBattleState.winner === null) {
+                result.currentMetrics = computeExactMetrics(stepBattleState.currentAttacker, stepBattleState.currentDefender);
+            }
+
+            currentDisplayResult = result;
+            displayResult(result, true);
+        }
+
+        function blitzMode() {
+            const inputs = getInputs();
+            if (!inputs) return;
+
+            // Flash animation
+            const flash = document.createElement('div');
+            flash.className = 'blitz-animation';
+            flash.textContent = '⚡';
+            document.body.appendChild(flash);
+            setTimeout(() => flash.remove(), 300);
+
+            const result = engine.simulateBattle(inputs.attackerTroops, inputs.defenderTroops);
+            result.metrics = computeExactMetrics(inputs.attackerTroops, inputs.defenderTroops);
+
+            currentDisplayResult = result;
+            stepBattleState = null;
+            showDetails = false;
+            displayResult(result, false);
+        }
+
+        function resetAll() {
+            document.getElementById('attackerTroops').value = 10;
+            document.getElementById('defenderTroops').value = 6;
+            document.getElementById('attackerTroops').classList.remove('error');
+            document.getElementById('defenderTroops').classList.remove('error');
+
+            currentDisplayResult = null;
+            stepBattleState = null;
+            showDetails = false;
+
+            document.getElementById('resultSection').style.display = 'none';
+            document.getElementById('resultContent').innerHTML = '';
+            updateLiveProbability();
+        }
+
+        // ============ Initialize ============
+        window.addEventListener('DOMContentLoaded', () => {
+            updateLiveProbability();
+        });
+    </script>
+</body>
+</html>
